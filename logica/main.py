@@ -6,5 +6,4 @@ if __name__ == "__main__":
     ciclos = 5
     matriz = crear_matriz(n)
 
-    imprimir_matriz(matriz)
     actualizar_ecosistema(matriz, ciclos)
