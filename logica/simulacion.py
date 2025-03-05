@@ -1,30 +1,26 @@
-from movimiento import mover_presas, mover_depredadores
-from organismos import Depredador, Presa, Planta
-from ecosistema import imprimir_matriz
 import random
+from movimiento import mover_presas, mover_depredadores
+from organismos import Planta
+from ecosistema import imprimir_matriz
 
-
-def regenerar_plantas(matriz, tasa=0.05):
-    n = len(matriz)
-    posiciones_vacias = [(i, j) for i in range(n) for j in range(n) if matriz[i][j] is None]
-    random.shuffle(posiciones_vacias)
-    for i in range(int(len(posiciones_vacias) * tasa)):
-        x, y = posiciones_vacias[i]
-        matriz[x][y] = Planta()
-
+def regenerar_plantas(matriz, posiciones, cantidad):
+    if cantidad == 0 or not posiciones:
+        return
+    x, y = posiciones.pop()
+    matriz[x][y] = Planta()
+    regenerar_plantas(matriz, posiciones, cantidad - 1)
 
 def actualizar_ecosistema(matriz, ciclos, actual=0):
     if actual == ciclos:
         return
 
-    n = len(matriz)
-    for x in range(n):
-        for y in range(n):
-            if isinstance(matriz[x][y], Presa):
-                mover_presas(matriz, x, y)
-            elif isinstance(matriz[x][y], Depredador):
-                mover_depredadores(matriz, x, y)
+    posiciones = [(i, j) for i in range(len(matriz)) for j in range(len(matriz))]
+    direcciones = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    random.shuffle(direcciones)
 
-    regenerar_plantas(matriz)
+    mover_presas(matriz, posiciones, direcciones)
+    mover_depredadores(matriz, posiciones, direcciones)
+    regenerar_plantas(matriz, random.sample(posiciones, len(posiciones)), int(len(posiciones) * 0.05))
+
     imprimir_matriz(matriz)
     actualizar_ecosistema(matriz, ciclos, actual + 1)

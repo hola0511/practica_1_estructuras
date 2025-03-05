@@ -1,42 +1,47 @@
 import random
 from organismos import Depredador, Presa
 
-
-def mover_presas(matriz, x, y):
-    if not isinstance(matriz[x][y], Presa):
+def mover_presas(matriz, posiciones, direcciones):
+    if not posiciones:
         return
+    x, y = posiciones[0]
+    if isinstance(matriz[x][y], Presa):
+        def mover_recursivo(dirs):
+            if not dirs:
+                return
+            dx, dy = dirs[0]
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < len(matriz) and 0 <= ny < len(matriz) and matriz[nx][ny] is None:
+                if random.random() < matriz[x][y].reproduccion_probabilidad:
+                    matriz[nx][ny] = Presa()
+                return
+            mover_recursivo(dirs[1:])
+        mover_recursivo(direcciones)
+    mover_presas(matriz, posiciones[1:], direcciones)
 
-    direcciones = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-    random.shuffle(direcciones)
-
-    for dx, dy in direcciones:
-        nx, ny = x + dx, y + dy
-        if 0 <= nx < len(matriz) and 0 <= ny < len(matriz) and matriz[nx][ny] is None:
-            if random.random() < matriz[x][y].reproduccion_probabilidad:
-                matriz[nx][ny] = Presa()
-            return
-
-
-def mover_depredadores(matriz, x, y):
-    if not isinstance(matriz[x][y], Depredador):
+def mover_depredadores(matriz, posiciones, direcciones):
+    if not posiciones:
         return
-    depredador = matriz[x][y]
-
-    direcciones = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-    random.shuffle(direcciones)
-
-    for dx, dy in direcciones:
-        nx, ny = x + dx, y + dy
-        if 0 <= nx < len(matriz) and 0 <= ny < len(matriz):
-            if isinstance(matriz[nx][ny], Presa):
-                matriz[nx][ny] = depredador  # Caza la presa
-                depredador.cazar()
-                matriz[x][y] = None
+    x, y = posiciones[0]
+    if isinstance(matriz[x][y], Depredador):
+        depredador = matriz[x][y]
+        def mover_recursivo(dirs):
+            if not dirs:
                 return
-            elif matriz[nx][ny] is None:
-                matriz[nx][ny] = depredador
-                matriz[x][y] = None
-                return
-
-    if not depredador.sobrevivir():
-        matriz[x][y] = None  # Depredador muere si no caza
+            dx, dy = dirs[0]
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < len(matriz) and 0 <= ny < len(matriz):
+                if isinstance(matriz[nx][ny], Presa):
+                    matriz[nx][ny] = depredador
+                    depredador.cazar()
+                    matriz[x][y] = None
+                    return
+                elif matriz[nx][ny] is None:
+                    matriz[nx][ny] = depredador
+                    matriz[x][y] = None
+                    return
+            mover_recursivo(dirs[1:])
+        mover_recursivo(direcciones)
+        if not depredador.sobrevivir():
+            matriz[x][y] = None
+    mover_depredadores(matriz, posiciones[1:], direcciones)

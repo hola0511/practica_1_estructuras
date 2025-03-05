@@ -19,8 +19,8 @@ class Depredador(Organismo):
 
 class Presa(Organismo):
     def __init__(self):
-        self.reproduccion_probabilidad = 0.3
         super().__init__("P")
+        self.reproduccion_probabilidad = 0.2  # Probabilidad reducida de reproducción
 
 class Planta(Organismo):
     def __init__(self):
