@@ -7,7 +7,7 @@ def mover_presas(matriz: list[list[Optional[Organismo]]], posiciones: list[tuple
         return
     x, y = posiciones[0]
     if isinstance(matriz[x][y], Presa):
-        def mover_recursivo(dirs):
+        def mover(dirs: list[tuple[int, int]]) -> None:
             if not dirs:
                 return
             dx, dy = dirs[0]
@@ -16,8 +16,8 @@ def mover_presas(matriz: list[list[Optional[Organismo]]], posiciones: list[tuple
                 if random.random() < matriz[x][y].reproduccion_probabilidad:
                     matriz[nx][ny] = Presa()
                 return
-            mover_recursivo(dirs[1:])
-        mover_recursivo(direcciones)
+            mover(dirs[1:])
+        mover(direcciones)
     mover_presas(matriz, posiciones[1:], direcciones)
 
 def mover_depredadores(matriz: list[list[Optional[Organismo]]], posiciones: list[tuple[int, int]], direcciones: list[tuple[int, int]]) -> None:
@@ -26,7 +26,7 @@ def mover_depredadores(matriz: list[list[Optional[Organismo]]], posiciones: list
     x, y = posiciones[0]
     if isinstance(matriz[x][y], Depredador):
         depredador = matriz[x][y]
-        def mover_recursivo(dirs):
+        def mover(dirs: list[tuple[int, int]]) -> None:
             if not dirs:
                 return
             dx, dy = dirs[0]
@@ -41,8 +41,8 @@ def mover_depredadores(matriz: list[list[Optional[Organismo]]], posiciones: list
                     matriz[nx][ny] = depredador
                     matriz[x][y] = None
                     return
-            mover_recursivo(dirs[1:])
-        mover_recursivo(direcciones)
+            mover(dirs[1:])
+        mover(direcciones)
         if not depredador.sobrevivir():
             matriz[x][y] = None
     mover_depredadores(matriz, posiciones[1:], direcciones)
