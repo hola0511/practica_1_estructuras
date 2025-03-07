@@ -5,5 +5,4 @@ if __name__ == "__main__":
     n = 5
     ciclos = 5
     matriz = crear_matriz(n)
-
     actualizar_ecosistema(matriz, ciclos)

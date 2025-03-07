@@ -1,7 +1,8 @@
 import random
-from organismos import Depredador, Presa
+from typing import Optional
+from organismos import Organismo, Depredador, Presa
 
-def mover_presas(matriz, posiciones, direcciones):
+def mover_presas(matriz: list[list[Optional[Organismo]]], posiciones: list[tuple[int, int]], direcciones: list[tuple[int, int]]) -> None:
     if not posiciones:
         return
     x, y = posiciones[0]
@@ -19,7 +20,7 @@ def mover_presas(matriz, posiciones, direcciones):
         mover_recursivo(direcciones)
     mover_presas(matriz, posiciones[1:], direcciones)
 
-def mover_depredadores(matriz, posiciones, direcciones):
+def mover_depredadores(matriz: list[list[Optional[Organismo]]], posiciones: list[tuple[int, int]], direcciones: list[tuple[int, int]]) -> None:
     if not posiciones:
         return
     x, y = posiciones[0]

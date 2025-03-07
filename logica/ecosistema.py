@@ -1,7 +1,9 @@
 import random
-from organismos import Depredador, Presa, Planta
+from typing import Optional
 
-def inicializar_matriz( n: int, fila=0, col=0, matriz=None):
+from organismos import Organismo, Depredador, Presa, Planta
+
+def inicializar_matriz( n: int, fila: int = 0, col: int = 0, matriz: Optional[list[list[Optional[Organismo]]]] = None) -> list[list[Optional[Organismo]]]:
     if matriz is None:
         matriz = []
     if fila == n:
@@ -10,39 +12,39 @@ def inicializar_matriz( n: int, fila=0, col=0, matriz=None):
         matriz.append([])
     matriz[fila].append(None)
     if col == n - 1:
-        return inicializar_matriz(fila + 1, 0, n, matriz)
-    return inicializar_matriz(fila, col + 1, n, matriz)
+        return inicializar_matriz(n, fila + 1, 0, matriz)
+    return inicializar_matriz(n, fila, col + 1, matriz)
 
-def generar_posiciones_recursivo( n: int,i=0, j=0, acumulador=None):
+def generar_posiciones(n: int, i: int = 0, j: int = 0, acumulador: Optional[list[tuple[int, int]]] = None)-> list[tuple[int, int]]:
     if acumulador is None:
         acumulador = []
     if i == n:
         return acumulador
     if j == n:
-        return generar_posiciones_recursivo(i + 1, 0, n, acumulador)
+        return generar_posiciones(n, i + 1, 0, acumulador)
     acumulador.append((i, j))
-    return generar_posiciones_recursivo(i, j + 1, n, acumulador)
+    return generar_posiciones(n, i, j + 1, acumulador)
 
-def colocar_organismos_recursivo(matriz, posiciones, clase, cantidad):
+def colocar_organismos(matriz: list[list[Optional[Organismo]]], posiciones, clase, cantidad: int) -> None:
     if cantidad == 0 or not posiciones:
         return
     x, y = posiciones.pop()
     matriz[x][y] = clase()
-    colocar_organismos_recursivo(matriz, posiciones, clase, cantidad - 1)
+    colocar_organismos(matriz, posiciones, clase, cantidad - 1)
 
-def crear_matriz(n: int, densidad_presas=0.15, densidad_depredadores=0.1, densidad_plantas=0.3):
-    matriz = inicializar_matriz(n=n)
-    posiciones = random.sample(generar_posiciones_recursivo(n=n), n * n)
-    colocar_organismos_recursivo(matriz, posiciones, Presa, int(n * n * densidad_presas))
-    colocar_organismos_recursivo(matriz, posiciones, Depredador, int(n * n * densidad_depredadores))
-    colocar_organismos_recursivo(matriz, posiciones, Planta, int(n * n * densidad_plantas))
+def crear_matriz(n: int, densidad_presas: float=0.15, densidad_depredadores: float=0.1, densidad_plantas: float=0.3) -> list[list[Optional[Organismo]]]:
+    matriz = inicializar_matriz(n)
+    posiciones = random.sample(generar_posiciones(n), n * n)
+    colocar_organismos(matriz, posiciones, Presa, int(n * n * densidad_presas))
+    colocar_organismos(matriz, posiciones, Depredador, int(n * n * densidad_depredadores))
+    colocar_organismos(matriz, posiciones, Planta, int(n * n * densidad_plantas))
     return matriz
 
-def imprimir_matriz(matriz):
-    def imprimir_filas_recursivo(filas):
+def imprimir_matriz(matriz: list[list[Optional[Organismo]]]) -> None:
+    def imprimir_filas(filas: list[list[Optional[Organismo]]]) -> None:
         if not filas:
             print()
             return
         print("[" + " ".join(str(c) if c else "." for c in filas[0]) + "]")
-        imprimir_filas_recursivo(filas[1:])
-    imprimir_filas_recursivo(matriz)
+        imprimir_filas(filas[1:])
+    imprimir_filas(matriz)
